@@ -35,7 +35,7 @@ comparedLists=annotationComparison.Main(gbk_Name,prod_Name)
 differences = comparedLists[0]
 common = comparedLists[1]
 
-sequenceList=commonRetrieval.Main(fa_Name,common[0])
+sequenceList=commonRetrieval.Main(fa_Name,common)
 
 if not os.path.exists(os.path.abspath(".")+"/glimmFolder"):
 	subprocess.call("mkdir glimmFolder",shell=True)
@@ -62,9 +62,7 @@ else:
 
 placeHolderList3=GlimmerComparison.Main(differences,os.getcwd()+"/glimmFolder/"+fa_Name.split(".")[-2].split("/")[-1]+"_temp.predict")
 placeHolderList1=AnnotationRetrieval_genbank.Main(gbk_Name,placeHolderList3)
-raw_input(placeHolderList1)
 placeHolderList2=AnnotationRetrieval_prodigal.Main(prod_Name,placeHolderList3)
-raw_input(placeHolderList2)
 placeHolderList5=CommRetrieve_gbk.Main(gbk_Name,common[0])
 titleList = gbkTitleGet.Main(gbk_Name)
 
