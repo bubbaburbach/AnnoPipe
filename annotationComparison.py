@@ -1,7 +1,6 @@
 def Main(fileA,fileB):
 #	import sys
     import re
-
 ######
     list1 = list()
     list2 = list()
@@ -24,6 +23,7 @@ def Main(fileA,fileB):
     altList2.append([])
     altList2.append([])
     
+#    print os.getcwd()
     with open(fileA) as handle:
         for item in handle:
             if "  CDS  " in item or "  tRNA  " in item:

@@ -17,9 +17,10 @@ def Main(inList):
     pSeq = list()
     pList = list()
     cdsList = list()
-    prodList = list()
+    productList = list()
     outList = list()
     errList = list()
+    translationList = list()
     First = False
     likelyTrans = None 
     maxScore = 0
@@ -31,6 +32,12 @@ def Main(inList):
 #		inList = handle.readlines()
 
     lastElem = len(inList)-1
+    i = 0
+    
+#    with open("debugIn.txt","w") as debugger:
+#        for item in inList:
+#            debugger.write(item)
+            
     for item in inList:
         if "  CDS  " in item and not First:
             First = True
@@ -41,20 +48,24 @@ def Main(inList):
             cdsList.append(item.strip())
         elif ">" not in item:
             pList.append(item.strip())
-        if inList.index(item) == lastElem:
+        if i == lastElem:
             pSeq.append(''.join(pList)[:].strip())
             del pList[:]
+        i = i+1
+        
     length = str(len(cdsList))
     for protein in pSeq:
+        likelyTrans = None
         if "/translation" in protein:
             protein = string.split(protein,"/translation=")[1]
             protein = string.split(protein,"/")[0]
         if protein != '':
+            translationList.append(protein)
             try:
-                print "BLASTing "+str(count)+" of "+ length+"."
+                print("BLASTing "+ str(count)+" of "+length+".")
                 blasted = NCBIWWW.qblast("blastp","nr",protein,format_type="XML")
                 record = NCBIXML.read(blasted)
-    			#likelyTrans = record.alignments[0]
+                #likelyTrans = record.alignments[0]
                 for records in record.alignments:
                     if records.hsps[0].expect < min_e:
                         maxScore = records.hsps[0].score
@@ -63,44 +74,51 @@ def Main(inList):
                     elif records.hsps[0].expect == min_e and records.hsps[0].score > maxScore:
                         maxScore = records.hsps[0].score
                         likelyTrans = records
-                    prodList.append(str(likelyTrans.title).split(">")[0].split("[")[0].split("|")[-1])
-    			#print likelyTrans
-                    maxScore = 0
-                    min_e = 100
-
+                if likelyTrans is not None:
+                    productList.append(str(likelyTrans.title).split(">")[0].split("[")[0].split("|")[-1])
+                else:
+                    productList.append("No match found in NCBI database.")
+                #print likelyTrans
+                maxScore = 0
+                min_e = 100
     
             except urllib2.URLError:
-                index = pSeq.index(protein)
+                index = translationList.index(protein)
                 errList.append(cdsList.pop(index))
                 errList.append(protein)
-                pSeq.remove(protein)			
+ #               pSeq.remove(protein)		
+                translationList.remove(protein)
                 pass
     
             except urllib2.HTTPError:
-                index = pSeq.index(protein)
+                index = translationList.index(protein)
                 errList.append(cdsList.pop(index))
                 errList.append(protein)
-                pSeq.remove(protein)
+#                pSeq.remove(protein)
+                translationList.remove(protein)
                 pass
-        print "BLASTed "+str(count)
         count += 1
-    print pSeq
+#    print pSeq
     i = 0
+#    with open("debug.txt","w") as debug:
+#        while i < len(cdsList):
+#            debug.write("\t"+cdsList[i])
+#            debug.write("\t\t"+pSeq[i])
+#            i = i + 1
     while i < len(cdsList):
-        outList.append(cdsList[i])
-        if len(pSeq[i]) < 45:
-            outList.append('\t\t     /translation="'+pSeq[i]+'"')
+        outList.append("     "+cdsList[i])
+        if len(translationList[i]) < 45:
+            outList.append('\t\t     /translation='+translationList[i])
         else:
-            outList.append('\t\t     /translation="'+pSeq[i][:43])
-            pSeq[i] = pSeq[i][44:]
-            while len(pSeq[i]) > 58:
-                outList.append("\t\t     "+pSeq[i][:57])
-                pSeq[i] = pSeq[i][58:]
-            if pSeq[i] != '':
-                outList.append("\t\t     "+pSeq[i]+'"')
-            outList.append('\t\t     /product="'+prodList[i]+'"')
+            outList.append('\t\t     /translation='+translationList[i][:43])
+            translationList[i] = translationList[i][44:]
+            while len(translationList[i]) > 58:
+                outList.append("\t\t     "+translationList[i][:57])
+                translationList[i] = translationList[i][58:]
+            if translationList[i] != '':
+                outList.append("\t\t     "+translationList[i])
+        outList.append('\t\t     /product="'+productList[i]+'"')
         i=i+1
-
 #	gc.disable()
     if len(errList) != 0:
         with open("ErrorDump.txt","w") as errHandle:

@@ -21,6 +21,8 @@ def Main(infile,glimm):
     for item in glimm:
         if "Unique" in item and ".gbk" in item:
             keepFlag = True
+        if "BASE COUNT" in item:
+            keepFlag = False
         if keepFlag:
             if "Unique" in item and ".prod" in item:
                 keepFlag = False
@@ -37,6 +39,8 @@ def Main(infile,glimm):
         reverse = ''.join([focus.split('..')[1],'..',focus.split('..')[0]])
         for item in infileList:
             setFlag = False
+            if "BASE COUNT" in item:
+                focusFlag = False
             if focus in item or reverse in item:
                 focusFlag = True
                 setFlag = True
@@ -44,6 +48,7 @@ def Main(infile,glimm):
                 focusFlag = False
             if focusFlag:
                 outList.append(item)
+
 #	print outList
     return(outList)			
 #	with open(args.out,'w') as outFile:

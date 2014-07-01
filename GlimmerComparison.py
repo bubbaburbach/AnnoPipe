@@ -2,6 +2,7 @@ def Main(infile,glimm):
 #	import argparse
     import string
     import re
+    import os
 
 #	parser = argparse.ArgumentParser(description='Compare output of annotationComparison.py with the output of Glimmer')
 #	parser.add_argument('-i','--infile',type=str,help="The difference file from annotationComparison.py",required=True,dest='infile')
@@ -25,31 +26,36 @@ def Main(infile,glimm):
         elif item != "\n":
             origList.append(item)
 
-    with open(glimm,"r") as glimFile:
-        for item in glimFile:
-            if "orf" in item:
-                focus = item.split()
-                focus[1] = non_decimal.sub('',focus[1])
-                focus[2] = non_decimal.sub('',focus[2])
-                if int(focus[1]) > int(focus[2]):
-                    a = focus[1][:]
-                    focus[1] = focus[2][:]
-                    focus[2] = a[:]
+    if not os.path.isfile(glimm):
+        temp = glimm.split(".")
+        glimm = ".run1.".join(temp)
+    
+    if os.path.isfile(glimm):
+        with open(glimm,"r") as glimFile:
+            for item in glimFile:
+                if "orf" in item:
+                    focus = item.split()
+                    focus[1] = non_decimal.sub('',focus[1])
+                    focus[2] = non_decimal.sub('',focus[2])
+                    if int(focus[1]) > int(focus[2]):
+                        a = focus[1][:]
+                        focus[1] = focus[2][:]
+                        focus[2] = a[:]
                     glimSet.add((int(focus[1]),int(focus[2])))
-    count = 0
-    for item in origList:
-        count = count+1
-        if 'Unique' in item:
-            geneList.append(item)
-        elif item != ' ':
-            focus = re.split('[().]',item.translate(None,string.ascii_letters).translate(None,"()").strip())
-            focus[0] = non_decimal.sub('',focus[0])
-            focus[2] = non_decimal.sub('',focus[2])
-            if int(focus[0]) < int(focus[2]):
-                if (int(focus[0]),int(focus[2])) in glimSet:
-                    geneList.append(item)
-                elif (int(focus[0]),int(focus[2])) in glimSet:
-                    geneList.append(item)
+        count = 0
+        for item in origList:
+            count = count+1
+            if 'Unique' in item:
+                geneList.append(item)
+            elif item != ' ':
+                focus = re.split('[().]',item.translate(None,string.ascii_letters).translate(None,"()").strip())
+                focus[0] = non_decimal.sub('',focus[0])
+                focus[2] = non_decimal.sub('',focus[2])
+                if int(focus[0]) < int(focus[2]):
+                    if (int(focus[0]),int(focus[2])) in glimSet:
+                        geneList.append(item)
+                    elif (int(focus[0]),int(focus[2])) in glimSet:
+                        geneList.append(item)
                     
     for item in commonList:
         geneList.append(item)

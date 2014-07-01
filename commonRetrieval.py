@@ -30,7 +30,6 @@ def Main(fileA,listB):
     seqCount = 1
     for item in commonList:
         focus = item[0].split("..")
-        raw_input(focus)
         sequenceList.append(''.join(['>SEQ',str(seqCount),'  ',focus[0],' ',focus[1],'  len=',str(int(focus[1])-int(focus[0]))]))
         if item[1]:
             section = contig[int(focus[0])-1:int(focus[1])-1].translate(transTable)
@@ -38,6 +37,6 @@ def Main(fileA,listB):
         else:
             sequenceList.append(contig[int(focus[0])-1:int(focus[1])-1])
         seqCount = seqCount + 1
-    with open("trainingSet.fa.temp",'w') as output:
-        output.write('\n'.join(sequenceList))
+#    with open("trainingSet.fa.temp",'a') as output:
+#       output.write('\n'.join(sequenceList))
     return(sequenceList)
