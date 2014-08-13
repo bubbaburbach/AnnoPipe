@@ -1,4 +1,4 @@
-def Main(infile,glimm):
+def Main(inList,glimm):
 #	import argparse
     import string
     import re
@@ -18,7 +18,7 @@ def Main(infile,glimm):
     non_decimal = re.compile(r'[^\d.]+')
 
 #	with open(args.infile,"r") as origFile:
-    for item in infile:
+    for item in inList:
         if "Common" in item:
             commonFlag = True
         if commonFlag:
@@ -54,8 +54,10 @@ def Main(infile,glimm):
                 if int(focus[0]) < int(focus[2]):
                     if (int(focus[0]),int(focus[2])) in glimSet:
                         geneList.append(item)
-                    elif (int(focus[0]),int(focus[2])) in glimSet:
-                        geneList.append(item)
+                elif (int(focus[2]),int(focus[0])) in glimSet:
+                    geneList.append(item)
+    else:
+        print "Glimm file not found"
                     
     for item in commonList:
         geneList.append(item)

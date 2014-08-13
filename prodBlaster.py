@@ -1,8 +1,13 @@
 def Main(inList):
-    import urllib2
+#    import urllib2
     import string
-    from Bio.Blast import NCBIWWW
+    import subprocess
+    from subprocess import PIPE
+#    import sys
+#    from Bio.Blast import NCBIWWW
+#    from Bio.Blast import Applications
     from Bio.Blast import NCBIXML
+    from cStringIO import StringIO
 #	import gc
 #	import argparse
 #	gc.enable()
@@ -12,8 +17,10 @@ def Main(inList):
 #	parser.add_argument('-o','--out',type=str,help="The output file for the program",default='pb_out.txt',required=True,dest='out')
 
 #	args = parser.parse_args()
-
+    # number of cpu's to use while blasting
+    cpu_count = 2
 #	inList = list()
+
     pSeq = list()
     pList = list()
     cdsList = list()
@@ -54,17 +61,23 @@ def Main(inList):
         i = i+1
         
     length = str(len(cdsList))
+    
+#   BLAST each protein sequence
     for protein in pSeq:
         likelyTrans = None
         if "/translation" in protein:
             protein = string.split(protein,"/translation=")[1]
             protein = string.split(protein,"/")[0]
+        string.upper(protein)
         if protein != '':
             translationList.append(protein)
             try:
                 print("BLASTing "+ str(count)+" of "+length+".")
-                blasted = NCBIWWW.qblast("blastp","nr",protein,format_type="XML")
-                record = NCBIXML.read(blasted)
+#                blasted = NCBIWWW.qblast("blastp","nr",protein,format_type="XML")
+                cmd = 'blastp -db nr -outfmt 5 -num_threads '+str(cpu_count)+' -query <(echo -e "'+protein+'")'
+                blastIt=subprocess.Popen(args=cmd,shell=True,executable="/bin/bash",stdout=PIPE,stderr=PIPE)
+                (stdout,stderr)=blastIt.communicate()
+                record = NCBIXML.read(StringIO(stdout))
                 #likelyTrans = record.alignments[0]
                 for records in record.alignments:
                     if records.hsps[0].expect < min_e:
@@ -78,27 +91,28 @@ def Main(inList):
                     productList.append(str(likelyTrans.title).split(">")[0].split("[")[0].split("|")[-1])
                 else:
                     productList.append("No match found in NCBI database.")
-                #print likelyTrans
                 maxScore = 0
                 min_e = 100
     
-            except urllib2.URLError:
-                index = translationList.index(protein)
-                errList.append(cdsList.pop(index))
-                errList.append(protein)
- #               pSeq.remove(protein)		
-                translationList.remove(protein)
-                pass
-    
-            except urllib2.HTTPError:
-                index = translationList.index(protein)
-                errList.append(cdsList.pop(index))
-                errList.append(protein)
-#                pSeq.remove(protein)
-                translationList.remove(protein)
-                pass
+            except OSError:
+                print "OS error encountered while attempting 'blastp'. Please verify program paths\nand environment variables, specifically the '$BLASTDB' variable."
+                raise(OSError)
+#            except urllib2.URLError:
+#                index = translationList.index(protein)
+#                errList.append(cdsList.pop(index))
+#                errList.append(protein)
+# #               pSeq.remove(protein)		
+#                translationList.remove(protein)
+#                pass
+#    
+#            except urllib2.HTTPError:
+#                index = translationList.index(protein)
+#                errList.append(cdsList.pop(index))
+#                errList.append(protein)
+##                pSeq.remove(protein)
+#                translationList.remove(protein)
+#                pass
         count += 1
-#    print pSeq
     i = 0
 #    with open("debug.txt","w") as debug:
 #        while i < len(cdsList):
@@ -130,3 +144,4 @@ def Main(inList):
 #	with open(args.out,"w") as outFile:
 #		for item in outList:
 #			outFile.write(item)
+    
