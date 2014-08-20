@@ -1,7 +1,8 @@
+import string
+import re
 def Main(infile,glimm):
 #	import argparse
-    import string
-    import re
+
 
 #	parser = argparse.ArgumentParser(description='Compare output of annotationComparison.py with the output of Glimmer')
 #	parser.add_argument('-i','--infile',type=str,help="The original prodigal (.prod) annotation file",required=True,dest='infile')

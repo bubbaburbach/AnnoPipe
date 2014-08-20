@@ -1,7 +1,8 @@
+import string
+import re
 def Main(infile,glimm):
 #	import argparse
-    import string
-    import re
+
 
 	#add option for multiple .gbk files low priority
 
@@ -21,7 +22,7 @@ def Main(infile,glimm):
     for item in glimm:
         if "Unique" in item and ".gbk" in item:
             keepFlag = True
-        if "BASE COUNT" in item:
+        if "BASE " in item:
             keepFlag = False
         if keepFlag:
             if "Unique" in item and ".prod" in item:
@@ -41,7 +42,7 @@ def Main(infile,glimm):
             setFlag = False
             if "BASE COUNT" in item:
                 focusFlag = False
-            if focus in item or reverse in item:
+            elif focus in item or reverse in item:
                 focusFlag = True
                 setFlag = True
             elif not setFlag and '..' in item:

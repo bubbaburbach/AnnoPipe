@@ -1,15 +1,17 @@
-def Main(inList):
 #    import urllib2
-    import string
-    import subprocess
-    from subprocess import PIPE
+import string
+import subprocess
+from subprocess import PIPE
 #    import sys
 #    from Bio.Blast import NCBIWWW
 #    from Bio.Blast import Applications
-    from Bio.Blast import NCBIXML
-    from cStringIO import StringIO
+from Bio.Blast import NCBIXML
+from cStringIO import StringIO
 #	import gc
 #	import argparse
+
+def Main(inList):
+
 #	gc.enable()
 
 #	parser = argparse.ArgumentParser(description='BLASTs the protein sequences from prodigal to retrieva protein names')

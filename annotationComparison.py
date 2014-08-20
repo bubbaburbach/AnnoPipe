@@ -1,6 +1,7 @@
+import re
 def Main(fileA,fileB):
 #	import sys
-    import re
+
 ######
     list1 = list()
     list2 = list()

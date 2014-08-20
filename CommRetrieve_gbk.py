@@ -1,7 +1,8 @@
+import string
+import re
+
 def Main(infile,gList):
 #	import argparse
-    import string
-    import re
 
     infileList = list()
     glimmList = list()
@@ -13,8 +14,16 @@ def Main(infile,gList):
 
 
     with open(infile,"r") as Infile:
-	    for item in Infile:
-		    infileList.append(item)
+        keepFlag = True
+        for item in Infile:
+            if "BASE " in item:
+                keepFlag = False
+            if "LOCUS" in item:
+                keepFlag = True
+            if keepFlag:
+                infileList.append(item)
+            
+
 
     for focus in glimmList:
         focusFlag = False

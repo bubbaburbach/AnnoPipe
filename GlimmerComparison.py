@@ -1,8 +1,9 @@
+import string
+import re
+import os
 def Main(inList,glimm):
 #	import argparse
-    import string
-    import re
-    import os
+
 
 #	parser = argparse.ArgumentParser(description='Compare output of annotationComparison.py with the output of Glimmer')
 #	parser.add_argument('-i','--infile',type=str,help="The difference file from annotationComparison.py",required=True,dest='infile')

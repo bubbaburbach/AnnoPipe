@@ -8,7 +8,7 @@ import gc
 import string
 #import subprocess
 import re
-import subprocess
+import Master_Glue
 
 
 ############################ FUNCTION DEFINITIONS##########################
@@ -25,10 +25,11 @@ def parseFile(fileName,identifier):
     list_a = list()
     list_b = list()
     list_temp = list()
+    count_i = 0 
     with open(fileName,'r') as this:
-        for item in this:
-            list_file.append(item)
+        list_file = this.readlines()
     for item in list_file:
+        count_i+=1
         if identifier in item and flag_first:
             del list_temp[:]
             list_temp.append(item)
@@ -42,13 +43,16 @@ def parseFile(fileName,identifier):
             start = string.find(matched,"contig")
             list_a.append(matched[start:])
             del list_temp[:]
-            list_temp.append(item)
-        elif list_file.index(item) == len(list_file)-1:
+            list_temp.append(item)       
+        elif count_i == len(list_file):
             list_b.append(''.join(list_temp))
             del list_temp[:]
         else:
             list_temp.append(item)
-
+    with open("debug "+fileName.split(".")[-1],"w") as debug:
+        debug.write(str(len(list_a))+"\n"+str(len(list_b))+"\n")
+        debug.write(list_a[-1]+"\n")
+        debug.write(list_b[-1])
     del list_file[:]
     return list_a,list_b
 
@@ -73,6 +77,9 @@ outfile=args.out
 #if ".fastq" in fa_Name:
 #    print "This program does not currently accept fastq files.\nPlease input a fasta file"
 #    exit
+
+if not os.path.exists(outfile):
+    os.mkdir(outfile)
     
 flag_fa = False
 flag_gbk = False
@@ -108,9 +115,7 @@ if not os.path.isdir(outfile):
 
 if flag_fa:
     print "\nImporting fasta file"
-    p = parseFile(fa_Name,">") 
-    list_contigs_b = p[1]
-    list_contigs_a = p[0]
+    (list_contigs_a,list_contigs_b) = parseFile(fa_Name,">") 
     for item in list_contigs_a:
         if not dict_master.has_key(item):
             dict_master[item] = item
@@ -123,7 +128,7 @@ if flag_fa:
         os.chdir(key)
         list_local=list()
         i = 0
-        for i in range(0,len(list_contigs_a)-1):
+        for i in range(0,len(list_contigs_a)):
             if list_contigs_a[i] == key:
                 list_local.append(list_contigs_b[i])
         with open(key+".fa","w") as fa_out:
@@ -140,9 +145,7 @@ if flag_fa:
 if flag_gbk:
     index_for = 1
     print "\nImporting .gbk file"
-    p = parseFile(gbk_Name,"LOCUS")
-    list_gbkAnnot_b = p[1]
-    list_gbkAnnot_a = p[0]
+    (list_gbkAnnot_a,list_gbkAnnot_b) = parseFile(gbk_Name,"LOCUS")
     for item in list_gbkAnnot_a:
         if not dict_master.has_key(item):
             dict_master[item] = item
@@ -154,7 +157,7 @@ if flag_gbk:
         os.chdir(key)
         i = 0
         list_local = list()
-        for i in range(0,len(list_gbkAnnot_b)-1):
+        for i in range(0,len(list_gbkAnnot_b)):
             if list_gbkAnnot_a[i] == key:
                 list_local.append(list_gbkAnnot_b[i])
         with open(key+".gbk","w") as gbk_out:
@@ -196,23 +199,39 @@ if flag_prod:
             list_temp.append(item)
     del list_file[:]
     print "Dictionary length: "+str(len(dict_master))+"\n"
-    os.chdir(outfile)
-    for key in dict_master:  
-        if not os.path.isdir(key):  
-            os.mkdir(key)
-        os.chdir(key)
-        i = 0
-        list_local = list()
-        for i in range(0,len(list_prodAnnot_a)-1):
-            if list_prodAnnot_b[i] == key:
-                list_local.append(list_prodAnnot_a[i])
-        with open(str(key+".prod"),"w") as prod_out:
-            for item in list_local:
-                prod_out.write(item)
-        index_for = index_for + 1
-        os.chdir("..")
+os.chdir(outfile)
+for key in dict_master:  
+    if not os.path.isdir(key):  
+        os.mkdir(key)
+    os.chdir(key)
+    i = 0
+    list_local = list()
+    for i in range(0,len(list_prodAnnot_a)):
+        if list_prodAnnot_b[i] == key:
+            list_local.append(list_prodAnnot_a[i])
+    with open(str(key+".prod"),"w") as prod_out:
+        for item in list_local:
+            prod_out.write(item)
+    index_for = index_for + 1
     os.chdir("..")
-    outfile = '"'+outfile+'"'
-	
+os.chdir("..")
+gc.disable()
+
 if flag_prod and flag_gbk and flag_fa:
-	subprocess.call("MultiDir.sh -i "+outfile,shell=True)
+# compare and blast separate contigs and their respective annotations
+    os.chdir(outfile)
+    for folder in sorted(os.listdir(outfile)):
+        if folder is not "Output":
+            os.chdir(outfile+'/'+folder)
+            path = outfile+'/'+folder+'/'+folder
+            Master_Glue.main(path+'.gbk',path+'.prod',path+'.fa',path+'.out')
+            os.chdir("..")
+# concatenate all outputs into single file
+    with file("finalOut.txt","w") as final:
+        for folder in sorted(os.listdir(outfile)):
+            if folder != ("finalOut.txt"):
+                focus = file(folder+"/"+folder+".out")
+                block = focus.read(65536)
+                while block:
+                    final.write(block)
+                    block = focus.read(65536)  

@@ -1,6 +1,7 @@
+import string
 def Main(fileA,listB):
 #	import sys
-    import string
+
 
 
     contigList = list()
