@@ -19,8 +19,10 @@ def Main(inList):
 #	parser.add_argument('-o','--out',type=str,help="The output file for the program",default='pb_out.txt',required=True,dest='out')
 
 #	args = parser.parse_args()
+
+
     # number of cpu's to use while blasting
-    cpu_count = 2
+    cpu_count = 4
 #	inList = list()
 
     pSeq = list()
@@ -28,7 +30,7 @@ def Main(inList):
     cdsList = list()
     productList = list()
     outList = list()
-    errList = list()
+#    errList = list()
     translationList = list()
     First = False
     likelyTrans = None 
@@ -136,13 +138,13 @@ def Main(inList):
         outList.append('\t\t     /product="'+productList[i]+'"')
         i=i+1
 #	gc.disable()
-    if len(errList) != 0:
-        with open("ErrorDump.txt","w") as errHandle:
-            for errItem in errList:
-                errHandle.write(errItem + "\n")
-            print "Not all proteins were BLASTed due to connection problems.\nCheck 'ErrorDump.txt' for a list of these proteins"
-    print "Finished BLASTing"		
-    return(outList)
+#    if len(errList) != 0:
+#        with open("ErrorDump.txt","w") as errHandle:
+#            for errItem in errList:
+#                errHandle.write(errItem + "\n")
+#            print "Not all proteins were BLASTed due to connection problems.\nCheck 'ErrorDump.txt' for a list of these proteins"
+#    print "Finished BLASTing"		
+#    return(outList)
 #	with open(args.out,"w") as outFile:
 #		for item in outList:
 #			outFile.write(item)

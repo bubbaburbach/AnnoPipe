@@ -52,6 +52,11 @@ def Main(fileA,fileB):
         altList2[1].append(pole)
         
 
+#   Calculates the overlap difference between two annotated proteins.
+#       If the ratio between the difference and mean length of the two
+#       proteins is less than the given cutoff, the two are declared 
+#       equivalent.
+
     while count1 < len(list1):
         while count2 < len(list2):
             if altList2[0][count2] == 0:
@@ -88,26 +93,9 @@ def Main(fileA,fileB):
         for x in list2:
             if " "+str(item)+".." in x or "("+str(item)+".." in x or ","+str(item)+".." in x:
                 differences2.append(x[:])
-    
-#    differences.append("	Unique in " + fileA)
- #   tempList = [x for x in list1 if x not in list2]
-  #  for item in tempList:
- #        differences.append(item)
-#    differences.append(" ")
- #   differences.append("	Unique in " + fileB)
-  #  tempList = [x for x in list2 if x not in list1]
- #   for item in tempList:
-#        differences.append(item)
- #   common.append([x for x in list1 if x in list2])
 #
     differences = differences1+differences2
     return(differences,common)
-#	for item in differences:
-#		if item is not string:
-#			for x in item:
-#				print x
-#		else:
-#			print item
 #
 #	print "\n Common annotations"
 #	for item in common:

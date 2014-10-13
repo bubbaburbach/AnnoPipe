@@ -4,9 +4,7 @@ def Main(infile,glimm):
 #	import argparse
 
 
-	#add option for multiple .gbk files low priority
-
-#	parser = argparse.ArgumentParser(description='Compare output of annotationComparison.py with the output of Glimmer')
+#	parser = argparse.ArgumentParser(description='')
 #	parser.add_argument('-i','--infile',type=str,help="The original genbank (.gbk) annotation file",required=True,dest='infile')
 #	parser.add_argument('-g','--glimm',type=str,help="The GlimmerComparison.py output file",required=True,dest='glimm')
 #	parser.add_argument('-o','--out',type=str,help="The output file for the program",default='out.txt',required=True,dest='out')

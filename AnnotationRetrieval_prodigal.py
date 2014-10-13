@@ -17,7 +17,6 @@ def Main(infile,glimm):
     outList = list()
 
     keepFlag = False
-#	print glimm
 #	with open(glimm,"r") as glimFile:
     for item in glimm:
         shiftFlag = False

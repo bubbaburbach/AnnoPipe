@@ -45,7 +45,7 @@ def main(gbk_in,prod_in,fa_in,out_in):
     ###### No longer needed?
     #sequenceList=commonRetrieval.Main(fa_Name,common)
     ###
-    print os.path.abspath(".")
+    print str(len(differences))+" mismatches"
     if not os.path.exists(os.path.abspath(".")+"/glimmFolder"):
         subprocess.call("mkdir glimmFolder",shell=True,executable="/bin/bash")
         subprocess.call("cd glimmFolder",shell = True)
@@ -55,11 +55,13 @@ def main(gbk_in,prod_in,fa_in,out_in):
         subprocess.call("cd ..",shell=True)
     else:
     	print "\n\nglimmFile folder already exists\n\nskipping glimmer"
-    ## Compares the difference list against the Glimmer ORF's
-    placeHolderList3=GlimmerComparison.Main(differences,os.getcwd()+"/glimmFolder/"+fa_Name.split(".")[-2].split("/")[-1]+"_temp.predict")
+    #RNA_List=RNA_retrieve.Main(gbk_Name)
+    ## Compares the difference list against the Glimmer ORF'
+    placeHolderList3=GlimmerComparison.Main(differences,os.getcwd()+"/glimmFolder/"+fa_Name.split(".")[-2].split("/")[-1]+"_temp.predict")   
     placeHolderList1=AnnotationRetrieval_genbank.Main(gbk_Name,placeHolderList3)
     placeHolderList2=AnnotationRetrieval_prodigal.Main(prod_Name,placeHolderList3)
     placeHolderList5=CommRetrieve_gbk.Main(gbk_Name,common)
+
     titleList = gbkTitleGet.Main(gbk_Name)
     
     placeHolderList1 = placeHolderList1 + placeHolderList2

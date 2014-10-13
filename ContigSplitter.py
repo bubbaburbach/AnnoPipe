@@ -9,6 +9,7 @@ import string
 #import subprocess
 import re
 import Master_Glue
+import shutil
 
 
 ############################ FUNCTION DEFINITIONS##########################
@@ -234,4 +235,8 @@ if flag_prod and flag_gbk and flag_fa:
                 block = focus.read(65536)
                 while block:
                     final.write(block)
-                    block = focus.read(65536)  
+                    block = focus.read(65536)
+#clean out temp folders and files (not true temp files)
+    for folder in sorted(os.listdir(outfile)):
+            if folder != ("finalOut.txt"):
+                shutil.rmtree(folder)
