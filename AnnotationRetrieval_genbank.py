@@ -14,8 +14,12 @@ def Main(infile,glimm):
     infileList = list()
     glimmList = list()
     outList = list()
+    list_loc= list()
 
     keepFlag = False
+    
+    template_cds = re.compile('  CDS  ')
+    template_rna = re.compile('  [tmr]RNA  ')
 #	with open(args.glimm,"r") as glimFile:
     for item in glimm:
         if "Unique" in item and ".gbk" in item:

@@ -15,7 +15,7 @@ def Main(fileName):
     flag_keep = False
     flag_switch = False
     
-    template_rna = re.compile(' [tmr]RNA ')
+    template_rna = re.compile('  [tmr]RNA  ')
     template_cds = re.compile(' CDS ')
     template_bc = re.compile('BASE COUNT')
     
