@@ -42,10 +42,7 @@ def main(gbk_in,prod_in,fa_in,out_in):
     ### with the common proteins.
     ### Used to create training sequences for Glimmer
     
-    ###### No longer needed?
-    #sequenceList=commonRetrieval.Main(fa_Name,common)
-    ###
-    print str(len(differences))+" mismatches"
+    print str(len(differences[0]+len(differences[1])))+" mismatches"
     if not os.path.exists(os.path.abspath(".")+"/glimmFolder"):
         subprocess.call("mkdir glimmFolder",shell=True,executable="/bin/bash")
         subprocess.call("cd glimmFolder",shell = True)
@@ -58,22 +55,24 @@ def main(gbk_in,prod_in,fa_in,out_in):
     #RNA_List=RNA_retrieve.Main(gbk_Name)
     ## Compares the difference list against the Glimmer ORF'
     placeHolderList3=GlimmerComparison.Main(differences,os.getcwd()+"/glimmFolder/"+fa_Name.split(".")[-2].split("/")[-1]+"_temp.predict")   
-    placeHolderList1=AnnotationRetrieval_genbank.Main(gbk_Name,placeHolderList3)
-    placeHolderList2=AnnotationRetrieval_prodigal.Main(prod_Name,placeHolderList3)
+    placeHolderList1=AnnotationRetrieval_genbank.Main(gbk_Name,placeHolderList3[0])
+    placeHolderList2=AnnotationRetrieval_prodigal.Main(prod_Name,placeHolderList3[1])
+    
+    # Retrieve the verified genes' information from the genbank file 
+    common = common + placeHolderList1
     placeHolderList5=CommRetrieve_gbk.Main(gbk_Name,common)
-
     titleList = gbkTitleGet.Main(gbk_Name)
     
-    placeHolderList1 = placeHolderList1 + placeHolderList2
+    #placeHolderList1 = placeHolderList1 + placeHolderList2
     
     # Run remaining protein sequences through the NCBI database using BLAST
-     
     try:
-        placeHolderList4=prodBlaster.Main(placeHolderList1)
+        placeHolderList4=prodBlaster.Main(placeHolderList2)
     except OSError:
         raise
-        
-        
+    
+    # Next step is sort the genes based on location
+    
     outList = titleList + placeHolderList5 + placeHolderList4
     
     gc.disable()

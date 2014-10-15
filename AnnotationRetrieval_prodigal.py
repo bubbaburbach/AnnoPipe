@@ -1,5 +1,7 @@
 import string
 import re
+
+
 def Main(infile,glimm):
 #	import argparse
 
@@ -16,24 +18,30 @@ def Main(infile,glimm):
     cdsList = list()
     outList = list()
 
-    keepFlag = False
-#	with open(glimm,"r") as glimFile:
+    template_rna = re.compile('  [trm]RNA  ')
+    template_cds = re.compile('  CDS  ')
+#    keepFlag = False
+
+#    for item in glimm:
+#        shiftFlag = False
+#        if "Unique" in item and ".prod" in item:
+#            keepFlag = True
+#            shiftFlag = True
+#        elif keepFlag:
+#            if bool(re.compile('\d').search(item)):
+#                glimmList.append(item.translate(None,string.ascii_letters).translate(None,"()").strip())
+#            if not shiftFlag:
+#                keepFlag = False
     for item in glimm:
-        shiftFlag = False
-        if "Unique" in item and ".prod" in item:
-            keepFlag = True
-            shiftFlag = True
-        elif keepFlag:
-            if bool(re.compile('\d').search(item)):
-                glimmList.append(item.translate(None,string.ascii_letters).translate(None,"()").strip())
-            if not shiftFlag:
-                keepFlag = False
+        glimmList.append(item.translate(None,string.ascii_letters).translate(None,"()").strip())
+        
     with open(infile,"r") as inFile:
         for item in inFile:
-            if "  CDS  " in item:
+            if bool(re.search(template_rna,item)) or bool(re.search(template_cds,item)):
                 cdsList.append(item)
             else:
                 infileList.append(item)
+                
     for focus in glimmList:
         focusFlag = False
         reverse = ''.join([focus.split('..')[1],'..',focus.split('..')[0]])

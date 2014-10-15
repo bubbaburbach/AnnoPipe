@@ -1,5 +1,5 @@
-import string
-import re
+#import string
+#import re
 def Main(infile,glimm):
 #	import argparse
 
@@ -14,23 +14,21 @@ def Main(infile,glimm):
     infileList = list()
     glimmList = list()
     outList = list()
-    list_loc= list()
+#    list_loc= list()
 
-    keepFlag = False
+#    keepFlag = False
     
-    template_cds = re.compile('  CDS  ')
-    template_rna = re.compile('  [tmr]RNA  ')
+#    template_cds = re.compile('  CDS  ')
+#    template_rna = re.compile('  [tmr]RNA  ')
 #	with open(args.glimm,"r") as glimFile:
-    for item in glimm:
-        if "Unique" in item and ".gbk" in item:
-            keepFlag = True
-        if "BASE " in item:
-            keepFlag = False
-        if keepFlag:
-            if "Unique" in item and ".prod" in item:
-                keepFlag = False
-            if bool(re.compile('\d').search(item)) and "Unique" not in item:
-                glimmList.append(item.translate(None,string.ascii_letters).translate(None,"()").strip())
+#    for item in glimm:
+#        if "Unique" in item and ".gbk" in item:
+#            keepFlag = True
+#        if keepFlag:
+#            if "Unique" in item and ".prod" in item:
+#                keepFlag = False
+#            if bool(re.compile('\d').search(item)) and "Unique" not in item:
+#                glimmList.append(item.translate(None,string.ascii_letters).translate(None,"()").strip())
 
 
     with open(infile,"r") as Infile:
@@ -38,13 +36,14 @@ def Main(infile,glimm):
             infileList.append(item)
 
     for focus in glimmList:
+#        focus = focus.translate(None,string.ascii_letters).translate(None,"()").strip()
         focusFlag = False
-        reverse = ''.join([focus.split('..')[1],'..',focus.split('..')[0]])
+#       reverse = ''.join([focus.split('..')[1],'..',focus.split('..')[0]])
         for item in infileList:
             setFlag = False
             if "BASE COUNT" in item:
                 focusFlag = False
-            elif focus in item or reverse in item:
+            elif focus in item:# or reverse in item:
                 focusFlag = True
                 setFlag = True
             elif not setFlag and '..' in item:
