@@ -1,10 +1,10 @@
 import string
 import re
 import os
+import locEquiv
 
-diffAllow = .1
     
-def Main(inList,glimm):
+def Main(inList,glimm,diffAllow):
 #	import argparse
 
 
@@ -50,74 +50,78 @@ def Main(inList,glimm):
                     focus = item.split()
                     focus[1] = non_decimal.sub('',focus[1])
                     focus[2] = non_decimal.sub('',focus[2])
-                    altList1[0].append(int(focus[1]))
-                    altList1[1].append(int(focus[2]))
+                    altList2[0].append(int(focus[1]))
+                    altList2[1].append(int(focus[2]))
                     glimList.append((int(focus[1]),int(focus[2])))
 
+                
         for item in inList[0]:
             if item != ' ':
                 focus = re.split('[().]',item.translate(None,string.ascii_letters).translate(None,"()").strip())
-                altList2[0].append(int(non_decimal.sub('',focus[0])))
-                altList2[1].append(int(non_decimal.sub('',focus[2])))
-                
-        count1 = 0
-        count2 = 0                
-        while count1 < len(inList[0]):
-            loc1 = [altList1[0][count1],altList1[1][count1]]
-            if altList1[0][count1] > altList1[1][count1]:
-                loc1 = [altList1[1][count1],altList1[0][count1]]    
-            while count2 < len(glimList):
-                loc2 = [altList2[0][count1],altList2[1][count1]]
-                if altList2[0][count2] > altList2[1][count2]:
-                    loc2 = [altList2[1][count1],altList2[0][count1]]
-                if loc2[1] == -1:
-                    count2 = count2 + 1
-                elif (((abs(float(loc1[0])-float(loc2[1]))) + (abs(float(loc1[1])-float(loc2[1]))))/(((float(loc2[1])-float(loc2[0]))+(float(loc1[1])-float(loc1[0])))/2)) < diffAllow:
-#                    list_temp.append(str(altList1[0][count1][:])+'..'+str(altList1[1][count1][:]))
-                    list_gbk.append(inList[0][count1])
-                    altList1[0][count1] = -1
-                    altList1[1][count1] = -1
-                    altList2[0][count2] = -1
-                    altList2[1][count2] = -1
-                    break
-                else:
-                    count2 = count2+1
-            count1 += 1
-            count2 = 0
+                altList1[0].append(int(non_decimal.sub('',focus[0])))
+                altList1[1].append(int(non_decimal.sub('',focus[2])))
+
+#        count1 = 0
+#        count2 = 0                
+#        while count1 < len(inList[0]):
+#            loc1 = [altList1[0][count1],altList1[1][count1]]
+#            if altList1[0][count1] > altList1[1][count1]:
+#                loc1 = [altList1[1][count1],altList1[0][count1]]    
+#            while count2 < len(glimList):
+#                loc2 = [altList2[0][count2],altList2[1][count2]]
+#                if altList2[0][count2] > altList2[1][count2]:
+#                    loc2 = [altList2[1][count2],altList2[0][count2]]
+#                if loc2[1] == -1:
+#                    count2 = count2 + 1
+#                elif (((abs(float(loc1[0])-float(loc2[0]))) + (abs(float(loc1[1])-float(loc2[1]))))/(((float(loc2[1])-float(loc2[0]))+(float(loc1[1])-float(loc1[0])))/2)) < diffAllow:
+##                    list_temp.append(str(altList1[0][count1][:])+'..'+str(altList1[1][count1][:]))
+#                    list_gbk.append(inList[0][count1])
+#                    altList1[0][count1] = -1
+#                    altList1[1][count1] = -1
+#                    altList2[0][count2] = -1
+#                    altList2[1][count2] = -1
+#                    break
+#                else:
+#                    count2 = count2+1
+#            count1 += 1
+#            count2 = 0
+        for index in locEquiv.equivIndices(altList1,altList2,diffAllow):
+            list_gbk.append(inList[0][index])
             
-            
-        del(altList2[0][:])
-        del(altList2[1][:])
+        del(altList1[0][:])
+        del(altList1[1][:])
         for item in inList[1]:
             if item != ' ':
                 focus = re.split('[().]',item.translate(None,string.ascii_letters).translate(None,"()").strip())
-                altList2[0].append(int(non_decimal.sub('',focus[0])))
-                altList2[1].append(int(non_decimal.sub('',focus[2])))
+                altList1[0].append(int(non_decimal.sub('',focus[0])))
+                altList1[1].append(int(non_decimal.sub('',focus[2])))
                 
-        count1 = 0
-        count2 = 0                
-        while count1 < len(inList[1]):
-            loc1 = [altList1[0][count1],altList1[1][count1]]
-            if altList1[0][count1] > altList1[1][count1]:
-                loc1 = [altList1[1][count1],altList1[0][count1]]
-            while count2 < len(glimList):
-                loc2 = [altList2[0][count1],altList2[1][count1]]
-                if altList2[0][count2] > altList2[1][count2]:
-                    loc2 = [altList2[1][count1],altList2[0][count1]]
-                if loc2[1] == -1:
-                    count2 = count2 + 1
-                elif (((abs(float(loc1[0])-float(loc2[1]))) + (abs(float(loc1[1])-float(loc2[1]))))/(((float(loc2[1])-float(loc2[0]))+(float(loc1[1])-float(loc1[0])))/2)) < diffAllow:
-#                    list_temp.append(str(altList1[0][count1][:])+'..'+str(altList1[1][count1][:]))
-                    list_prod.append(inList[1][count1])
-                    altList1[0][count1] = -1
-                    altList1[1][count1] = -1
-                    altList2[0][count2] = -1
-                    altList2[1][count2] = -1
-                    break
-                else:
-                    count2 = count2+1
-            count1 += 1
-            count2 = 0
+#        count1 = 0
+#        count2 = 0                
+#        while count1 < len(inList[1]):
+#            loc1 = [altList1[0][count1],altList1[1][count1]]
+#            if altList1[0][count1] > altList1[1][count1]:
+#                loc1 = [altList1[1][count1],altList1[0][count1]]
+#            while count2 < len(glimList):
+#                loc2 = [altList2[0][count1],altList2[1][count1]]
+#                if altList2[0][count2] > altList2[1][count2]:
+#                    loc2 = [altList2[1][count1],altList2[0][count1]]
+#                if loc2[1] == -1:
+#                    count2 = count2 + 1
+#                elif (((abs(float(loc1[0])-float(loc2[0]))) + (abs(float(loc1[1])-float(loc2[1]))))/(((float(loc2[1])-float(loc2[0]))+(float(loc1[1])-float(loc1[0])))/2)) < diffAllow:
+##                    list_temp.append(str(altList1[0][count1][:])+'..'+str(altList1[1][count1][:]))
+#                    list_prod.append(inList[1][count1])
+#                    altList1[0][count1] = -1
+#                    altList1[1][count1] = -1
+#                    altList2[0][count2] = -1
+#                    altList2[1][count2] = -1
+#                    break
+#                else:
+#                    count2 = count2+1
+#            count1 += 1
+#            count2 = 0
+        for index in locEquiv.equivIndices(altList1,altList2,diffAllow):
+            list_prod.append(inList[1][index])
 #        for item in origList:
 #            count = count+1
 #            if 'Unique' in item:
@@ -136,6 +140,8 @@ def Main(inList,glimm):
                     
 #    for item in commonList:
 #        geneList.append(item)
+    print '\nGlimmer confirmed '+str(len(list_gbk))+' of '+str(len(inList[0]))+' mismatches from rast'
+    print 'Glimmer confirmed '+str(len(list_prod))+' of '+str(len(inList[1]))+' mismatches from prodigal\n'
     return(list_gbk,list_prod)
 #	with open(args.out,"w") as handle:
 #		for item in geneList:

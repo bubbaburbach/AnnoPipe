@@ -11,7 +11,7 @@ import annotationComparison
 import gbkTitleGet
 import CommRetrieve_gbk
 
-def main(gbk_in,prod_in,fa_in,out_in):
+def main(gbk_in,prod_in,fa_in,out_in,cpu_count,diffAllow):
     #import argparse
 
     
@@ -31,18 +31,18 @@ def main(gbk_in,prod_in,fa_in,out_in):
     prod_Name=prod_in
     fa_Name=fa_in
     outfile=out_in
-    
+    placeHolderList4 = list()
     ### Compare the .gbk and .prod annotations
     ### keeping what they agree on in 'common'
     ### differences are kept in 'differences'
 
-    (differences,common)=annotationComparison.Main(gbk_Name,prod_Name)
+    (differences,common)=annotationComparison.Main(gbk_Name,prod_Name,diffAllow)
     
     ### Retrieves the nucleotide sequences associated
     ### with the common proteins.
     ### Used to create training sequences for Glimmer
     
-    print str(len(differences[0]+len(differences[1])))+" mismatches"
+    print str(len(differences[0])+len(differences[1]))+" mismatches"
     if not os.path.exists(os.path.abspath(".")+"/glimmFolder"):
         subprocess.call("mkdir glimmFolder",shell=True,executable="/bin/bash")
         subprocess.call("cd glimmFolder",shell = True)
@@ -54,7 +54,7 @@ def main(gbk_in,prod_in,fa_in,out_in):
     	print "\n\nglimmFile folder already exists\n\nskipping glimmer"
     #RNA_List=RNA_retrieve.Main(gbk_Name)
     ## Compares the difference list against the Glimmer ORF'
-    placeHolderList3=GlimmerComparison.Main(differences,os.getcwd()+"/glimmFolder/"+fa_Name.split(".")[-2].split("/")[-1]+"_temp.predict")   
+    placeHolderList3=GlimmerComparison.Main(differences,os.getcwd()+"/glimmFolder/"+fa_Name.split(".")[-2].split("/")[-1]+"_temp.predict",diffAllow)   
     placeHolderList1=AnnotationRetrieval_genbank.Main(gbk_Name,placeHolderList3[0])
     placeHolderList2=AnnotationRetrieval_prodigal.Main(prod_Name,placeHolderList3[1])
     
@@ -67,7 +67,7 @@ def main(gbk_in,prod_in,fa_in,out_in):
     
     # Run remaining protein sequences through the NCBI database using BLAST
     try:
-        placeHolderList4=prodBlaster.Main(placeHolderList2)
+        placeHolderList4=prodBlaster.Main(placeHolderList2,cpu_count)
     except OSError:
         raise
     
