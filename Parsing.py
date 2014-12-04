@@ -3,33 +3,23 @@ import re
 
 cds_template = re.compile("  CDS  ")
 rna_template = re.compile("  [trm]RNA  ")
-gene_template = re.compile("   gene  ")
 non_decimal = re.compile(r'[^\d.]+')
 
 id_default = [cds_template,rna_template]#,gene_template]
 
-def findPoles(listA,listB):
+def findPoles(listA):
     altList1 = [[],[]]
-    altList2 = [[],[]]
     for item in listA:
-        num = item.strip().replace(",","..").split("..")[-2]
+        num = item.strip().replace(",","..").split("..")[0]
         pole = non_decimal.sub('',num)
         altList1[0].append(pole[:])
-        num = item.strip().replace(",","..").split("..")[-1]
-        pole = non_decimal.sub('',num)
-        altList1[1].append(pole[:])
-            
-    for item in listB:
-        num = (item.strip().replace(",","..").split("..")[-2])
-        pole1 = non_decimal.sub('',num)
-        altList2[0].append(pole1[:])
-        num = (item.strip().replace(",","..").split("..")[-1])
-        pole1 = non_decimal.sub('',num)
-        altList2[1].append(pole1[:])
-    return altList1,altList2
+        num2 = item.strip().replace(",","..").split("..")[-1]
+        pole = non_decimal.sub('',num2)
+        altList1[1].append(pole[:])        
+    return altList1
     
 def sortPoles(altList1,altList2):
-    #sorting poles so it always reads (low,high)
+    #sorting poles so it always reads '(low,high)'
     t = 0
     while t < len(altList1[0]):
         if altList1[0][t] > altList1[1][t]:
@@ -37,6 +27,7 @@ def sortPoles(altList1,altList2):
             altList1[0][t] = altList1[1][t]
             altList1[1][t] = a
         t = t+1
+        
     t = 0
     while t < len(altList2[0]):
         if altList2[0][t] > altList2[1][t]:
@@ -60,7 +51,8 @@ def getAltLists(fileA,fileB,identifiers=id_default):
 # creates altLists used in location comparisons
     inListA = grabLocs(fileA,identifiers)
     inListB = grabLocs(fileB,identifiers)
-    altList1,altList2 =findPoles(inListA,inListB)        
+    altList1=findPoles(inListA)        
+    altList2=findPoles(inListB)
     return sortPoles(altList1,altList2)
     
 def genesFromSet(fileA,setA,identifiers=id_default,offal=[]):
@@ -75,18 +67,22 @@ def genesFromSet(fileA,setA,identifiers=id_default,offal=[]):
     firstPass = True
     with open(fileA) as focus:
         for line in focus:
+            #majority of files are genbank so this was left in
             if 'BASE COUNT' in line:
                 break
             else:
                 inList.append(line) 
-
+    count = 0
+    print "gfset inList: "+str(len(inList))
+    print "gfset setA: "+str(len(setA))
     for item in inList:
         for xx in identifiers:
             if re.search(xx,item):
-                alpha = non_decimal.sub('',item.split()[1].split('..')[0])
-                beta = non_decimal.sub('',item.split()[1].split('..')[1])
+                alpha = non_decimal.sub('',item.strip().replace(",","..").split('..')[0])
+                beta = non_decimal.sub('',item.strip().replace(",","..").split('..')[-1])
                 if (alpha,beta) in setA or(beta,alpha) in setA:
                     keepFlag = True
+                    count = count + 1
                     if not firstPass:
                         switchFlag = True
                     else:
@@ -104,9 +100,10 @@ def genesFromSet(fileA,setA,identifiers=id_default,offal=[]):
     else:
         if len(tempList) is not 0:
             annList.append(''.join(tempList))
-# removes extraneous identifier sections from output. Ignored if 'offal' is not empty
+    print "gfs annList pre-offal: "+str(len(annList))
+# removes extraneous identifier sections from output. Ignored if 'offal' is empty
     if offal: # offal: by-product from the harvest or milling of grain
-        kickout = False
+        kickout = bool
         temp_list = list()
         out_list = list()
         x = list()
@@ -117,15 +114,14 @@ def genesFromSet(fileA,setA,identifiers=id_default,offal=[]):
                     if re.search(off,x):
                         kickout = True
                 if kickout:
+                    temp_list.append('\n')
                     break
                 else:
                     temp_list.append(x)
-           # else:
-            #    temp_list.append('\n')
-            out_list.append('\n'.join(temp_list))
+                    temp_list.append('\n')
+            out_list.append(''.join(temp_list))
+            del temp_list[:]
         annList = list(out_list)
-            
-                
     unfound = len(setA) - len(annList)
     return(annList,unfound)
     

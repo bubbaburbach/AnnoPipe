@@ -131,6 +131,7 @@ if prod_Name != None:
 if not os.path.isdir(outfile):
     os.mkdir(outfile)
 
+#parse FASTA file
 if flag_fa:
     print "\nImporting fasta file"
     (list_contigs_a,list_contigs_b) = parseFile(fa_Name,">") 
@@ -160,6 +161,7 @@ if flag_fa:
     del list_contigs_a[:]
     del list_local[:]
 
+#parse the RAST annotation
 if flag_gbk:
     index_for = 1
     print "\nImporting .gbk file"
@@ -187,6 +189,7 @@ if flag_gbk:
     del list_gbkAnnot_a[:]
     del list_gbkAnnot_b[:]
 
+#parse the prodigal annotation
 if flag_prod:
     index_for = 1
     print "\nImporting prod file"

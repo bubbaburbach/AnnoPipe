@@ -59,7 +59,7 @@ if args.outfile is not None:
 
 for d in args.ident:
     ids.append(re.compile(d))
-    
+
 if args.exclude:
     for d in args.exclude:
         e = ''.join(d)
@@ -68,17 +68,13 @@ if args.exclude:
 nameA =fileA.split("/")[-1]        
 nameB = fileB.split("/")[-1]
 
-altListA,altListB = Parsing.getAltLists(fileA,fileB,identifiers=ids)#,gene_template])
-
-#loc_setA = set(zip(min(altListA[0],altListA[1]),max(altListA[0],altListA[1])))
-#loc_setB = set(zip(min(altListB[0],altListB[1]),max(altListB[0],altListB[1])))
+altListA,altListB = Parsing.getAltLists(fileA,fileB,identifiers=ids)
 
 
 
 if threshold == 0:    
     loc_setA = set(zip(altListA[0],altListA[1]))
     loc_setB = set(zip(altListB[0],altListB[1]))
-    
     common_set = loc_setA & loc_setB
     uniqA_set = loc_setA - loc_setB
     uniqB_set = loc_setB - loc_setA    
@@ -86,12 +82,7 @@ else:
     print len(altListA[0])," ",len(altListA[1])," ",len(altListB[0])," ",len(altListB[1])
     common_set=set(_geneEquivalence.locEquivalent(altListA,altListB,threshold))
     uniqA_set = set(zip([x for x in altListA[0] if x != -1],[y for y in altListA[1] if y != -1]))
-    uniqB_set = set(zip([x for x in altListB[0] if x != -1],[y for y in altListB[1] if y != -1]))
-    #for item in altListB[0]:
-        #if item == -1:
-            #print "hai"
-
-    
+    uniqB_set = set(zip([x for x in altListB[0] if x != -1],[y for y in altListB[1] if y != -1]))    
     
 if not outFlag:
     print len(altListA[0])," from ",nameA
@@ -102,7 +93,9 @@ if not outFlag:
 else:
     uniqListA,errA = Parsing.genesFromSet(fileA,uniqA_set,identifiers=ids,offal=ex_id)
     uniqListB,errB = Parsing.genesFromSet(fileB,uniqB_set,identifiers=ids,offal=ex_id)
-    #insert error statement here
+    #insert error statement here maybe?
+            
+        
     with open(outFile,'w') as out:
         out.write(str(len(altListA[0]))+" from "+nameA+"\n")
         out.write( str(len(altListB[0]))+" from "+nameB+"\n")

@@ -18,8 +18,8 @@ def locEquivalent(altList1,altList2,diffAllow=.01):
     count1 = 0
     count2 = 0
     tempList = list()
-    print len(altList2[1])#
-    print len(altList2[0])#
+    #print len(altList2[1])#
+    #print len(altList2[0])#
     while count1 < len(altList1[0]):
         loc1 = [altList1[0][count1],altList1[1][count1]]
         if altList1[0][count1] > altList1[1][count1]:

@@ -4,12 +4,12 @@ import gc
 import subprocess
 import prodBlaster
 import GlimmerComparison
-#import commonRetrieval
 import AnnotationRetrieval_prodigal
 import AnnotationRetrieval_genbank
 import annotationComparison
 import gbkTitleGet
 import CommRetrieve_gbk
+import _RNA_retrieve
 
 def main(gbk_in,prod_in,fa_in,out_in,cpu_count,diffAllow):
     #import argparse
@@ -52,7 +52,7 @@ def main(gbk_in,prod_in,fa_in,out_in,cpu_count,diffAllow):
         subprocess.call("cd ..",shell=True)
     else:
     	print "\n\nglimmFile folder already exists\n\nskipping glimmer"
-    #RNA_List=RNA_retrieve.Main(gbk_Name)
+    RNA_List=_RNA_retrieve.Main(gbk_Name)
     ## Compares the difference list against the Glimmer ORF'
     placeHolderList3=GlimmerComparison.Main(differences,os.getcwd()+"/glimmFolder/"+fa_Name.split(".")[-2].split("/")[-1]+"_temp.predict",diffAllow)   
     placeHolderList1=AnnotationRetrieval_genbank.Main(gbk_Name,placeHolderList3[0])
@@ -73,7 +73,7 @@ def main(gbk_in,prod_in,fa_in,out_in,cpu_count,diffAllow):
     
     # Next step is sort the genes based on location
     
-    outList = titleList + placeHolderList5 + placeHolderList4
+    outList = titleList + placeHolderList5 + placeHolderList4 +RNA_List[0]
     
     gc.disable()
     
