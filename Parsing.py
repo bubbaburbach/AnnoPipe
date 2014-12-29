@@ -12,10 +12,10 @@ def findPoles(listA):
     for item in listA:
         num = item.strip().replace(",","..").split("..")[0]
         pole = non_decimal.sub('',num)
-        altList1[0].append(pole[:])
+        altList1[0].append(int(pole[:]))
         num2 = item.strip().replace(",","..").split("..")[-1]
         pole = non_decimal.sub('',num2)
-        altList1[1].append(pole[:])        
+        altList1[1].append(int(pole[:]))       
     return altList1
     
 def sortPoles(altList1,altList2):
@@ -48,7 +48,12 @@ def grabLocs(fileA,identifiers=id_default):
     return(inListA)
         
 def getAltLists(fileA,fileB,identifiers=id_default):
-# creates altLists used in location comparisons
+# creates a list of sets of start and end locations for gene sites
+# e.g. 
+# 1..2, 3..4,5..6 becomes
+#[[1,3,5][2,4,6]]
+# used in location comparisons
+# 
     inListA = grabLocs(fileA,identifiers)
     inListB = grabLocs(fileB,identifiers)
     altList1=findPoles(inListA)        
@@ -73,13 +78,13 @@ def genesFromSet(fileA,setA,identifiers=id_default,offal=[]):
             else:
                 inList.append(line) 
     count = 0
-    print "gfset inList: "+str(len(inList))
-    print "gfset setA: "+str(len(setA))
+#    print "gfset inList: "+str(len(inList))
+#    print "gfset setA: "+str(len(setA))
     for item in inList:
         for xx in identifiers:
             if re.search(xx,item):
-                alpha = non_decimal.sub('',item.strip().replace(",","..").split('..')[0])
-                beta = non_decimal.sub('',item.strip().replace(",","..").split('..')[-1])
+                alpha = int(non_decimal.sub('',item.strip().replace(",","..").split('..')[0]))
+                beta = int(non_decimal.sub('',item.strip().replace(",","..").split('..')[-1]))
                 if (alpha,beta) in setA or(beta,alpha) in setA:
                     keepFlag = True
                     count = count + 1
@@ -100,7 +105,7 @@ def genesFromSet(fileA,setA,identifiers=id_default,offal=[]):
     else:
         if len(tempList) is not 0:
             annList.append(''.join(tempList))
-    print "gfs annList pre-offal: "+str(len(annList))
+#    print "gfs annList pre-offal: "+str(len(annList))
 # removes extraneous identifier sections from output. Ignored if 'offal' is empty
     if offal: # offal: by-product from the harvest or milling of grain
         kickout = bool

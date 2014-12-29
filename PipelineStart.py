@@ -46,6 +46,7 @@ def parseFile(fileName,identifier):
         if identifier in item and flag_first:
             del list_temp[:]
             list_temp.append(item)
+            print item
             matched = re.match(r".*contig\d+",item).group()
             start = string.find(matched,"contig")
             list_a.append(matched[start:])

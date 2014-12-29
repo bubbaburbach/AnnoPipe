@@ -44,7 +44,7 @@ parser.add_argument("-i","--input", type=str, nargs=2, dest="infiles",required=T
 parser.add_argument("-o","--output", type=str, dest="outfile",required=False)
 parser.add_argument("-d","--ident",type=list,nargs="*",default=["  CDS  ","  [trm]RNA  "],dest="ident",required=False, help="Gene identifiers for parsing files. Write for regular expressions. Defaults to '  CDS  ' and '  [trm]RNA  '.")
 parser.add_argument("-t","--threshold",action=fractionAction,type=float,dest="threshold",default=0,help=r"Difference threshold for comparing gene locations. Takes floats between 0 and 1. (exact - 100%% gene length offset)")
-parser.add_argument("-x","--exclude",type=list,nargs="*",dest="exclude",default=[],help="Identifiers to ignore when parsing files. Be exact and explicit, this is very unforgiving. Write for regular expressions.")
+parser.add_argument("-x","--exclude",type=list,nargs="*",dest="exclude",default=[],help='Identifiers to ignore when parsing files. Be exact and explicit, this is very unforgiving. Write for regular expressions, and use quotation marks e.g. " bar ".')
 args=parser.parse_args()
 
 fileA = args.infiles[0]
